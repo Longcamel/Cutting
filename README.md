@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-0078D6?logo=windows&logoColor=white)]()
 
-**[English](#english) | [中文](#中文) | [项目主页 / Project Page](https://YOUR-NAME.github.io/cutting/)**
+**[English](#english) | [中文](#中文) | [项目主页 / Project Page](https://longcamel.github.io/Cutting/)**
 
 <img src="docs/images/screenshot_main.png" alt="软件主界面 / Main Window" width="900"/>
 
@@ -62,7 +62,7 @@
 
 ```bash
 # 需要 Python >= 3.12 与 uv (https://docs.astral.sh/uv/)
-git clone https://github.com/YOUR-NAME/cutting.git
+git clone https://github.com/Longcamel/Cutting.git
 cd cutting
 
 # 安装依赖（uv 会自动创建虚拟环境）
@@ -167,7 +167,7 @@ no Python installation required.
 
 ```bash
 # Requires Python >= 3.12 and uv (https://docs.astral.sh/uv/)
-git clone https://github.com/YOUR-NAME/cutting.git
+git clone https://github.com/Longcamel/Cutting.git
 cd cutting
 
 uv sync                # install dependencies (uv creates the venv)

@@ -2,15 +2,13 @@
 
 > 完成所有步骤后可删除本文件。
 
-## 第 0 步：替换占位符（重要）
+## 第 0 步：替换占位符 ✅ 已完成
 
-把下面 6 处 `YOUR-NAME` 替换为你的 GitHub 用户名（若仓库名不是 cutting 也一并替换）：
-
-- `README.md`：2 处（git clone 地址、文档站链接）
-- `docs/index.html`：4 处（查看源码、下载、bug 反馈、页脚仓库链接）
-
-已本地提交 commit `docs: bilingual README + GitHub Pages site`，
-替换后记得再 commit 一次。
+仓库地址已确认为 `Longcamel/Cutting`（大写 C）。
+⚠️ **GitHub Pages 的 URL 大小写敏感**：
+正确地址是 `https://longcamel.github.io/Cutting/`（大写 C），
+小写 `cutting` 会 404。若想要小写地址，在仓库 Settings → General
+把仓库 Rename 为 `cutting` 即可（GitHub 会自动做旧地址跳转）。
 
 ## 第 1 步：在 GitHub 创建仓库
 
