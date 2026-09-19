@@ -8,3 +8,13 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Tool caches & test/build junk
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+pytest_out.txt
+temp_*.png
