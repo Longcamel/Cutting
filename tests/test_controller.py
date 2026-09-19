@@ -164,7 +164,7 @@ def _install_fake_io(monkeypatch, excel_mod=None, pdf_mod=None) -> None:
 def test_export_excel_success(qapp, tmp_path, monkeypatch) -> None:
     calls: list[tuple[object, ...]] = []
     mod = types.ModuleType("fileio.excel_exporter")
-    setattr(mod, "save_report", lambda *a: calls.append(a))
+    setattr(mod, "save_report", lambda *a, **kw: calls.append(a))
     _install_fake_io(monkeypatch, excel_mod=mod)
 
     ctrl = _make_controller(tmp_path, _FakeSolver())
@@ -179,7 +179,7 @@ def test_export_excel_success(qapp, tmp_path, monkeypatch) -> None:
 def test_export_excel_io_error_e007(qapp, tmp_path, monkeypatch) -> None:
     mod = types.ModuleType("fileio.excel_exporter")
 
-    def _raise(*a):
+    def _raise(*a, **kw):
         raise PermissionError("locked")
 
     setattr(mod, "save_report", _raise)

@@ -24,9 +24,9 @@ def test_format_issue_row_one_based() -> None:
     assert "max_len" not in text  # 模板参数已替换
 
 
-def test_format_issue_e008_uses_detail_and_max() -> None:
-    text = dialogs.format_issue(Issue("E008", detail="30"))
-    assert "30" in text and "25" in text
+def test_format_issue_e010_suggests_fast_mode() -> None:
+    text = dialogs.format_issue(Issue("E010"))
+    assert "快速模式" in text
 
 
 def test_format_issue_extra_kwargs() -> None:

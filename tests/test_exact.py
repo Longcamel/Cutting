@@ -1,10 +1,11 @@
 """exact_solver 模块测试（doc/tasks/exact_solver.md，详细设计 §3.4）。"""
 
 import threading
+import time
 
 import pytest
 
-from core.exact_solver import MAX_KINDS, ExactSolver, TooManyKindsError, enumerate_patterns
+from core.exact_solver import ExactSolver, ExactTimeoutError, enumerate_patterns
 from core.models import Part, StockSpec
 from core.validator import check_solution
 
@@ -34,19 +35,34 @@ def test_enumerate_patterns_feasible() -> None:
         assert all(p[i] <= min(demand[i], STOCK.length // lengths[i]) for i in range(2))
 
 
-def test_too_many_kinds_e008() -> None:
-    parts = [Part(length=100 + i, qty=1) for i in range(MAX_KINDS + 1)]
-    with pytest.raises(TooManyKindsError) as ei:
-        ExactSolver().solve(parts, STOCK)
-    assert ei.value.code == "E008"
-
-
-def test_exactly_max_kinds_ok() -> None:
+def test_over_25_kinds_no_longer_blocked() -> None:
+    # 上限拦截已解除：26 种（原 MAX_KINDS+1）也可正常精确求解
     # 大截面钢材场景：每棒至多装2件，组合数可控（小件×25种会子集爆炸，属设计适用边界）
-    parts = [Part(length=2000 + 10 * i, qty=1) for i in range(MAX_KINDS)]
+    parts = [Part(length=2000 + 10 * i, qty=1) for i in range(26)]
     sol = ExactSolver().solve(parts, STOCK)
     assert sol.patterns  # 可解
     assert check_solution(sol, parts, STOCK) == []
+
+
+def test_no_feasible_solution_raises_e010() -> None:
+    # 零件全部长于原料 → 无任何可行切割组合 → 结束并报 E010
+    parts = [Part(length=9000, qty=2)]
+    with pytest.raises(ExactTimeoutError) as ei:
+        ExactSolver().solve(parts, STOCK)
+    assert ei.value.code == "E010"
+
+
+def test_enumeration_phase_timeout_raises_e010(monkeypatch) -> None:
+    # 小件×40种 → 枚举组合爆炸，枚举阶段即耗尽时限 → 同样报 E010（30s 承诺覆盖枚举期）
+    import core.exact_solver as es
+
+    monkeypatch.setattr(es, "MAX_TIME_S", 0.5)
+    parts = [Part(length=233 + 7 * i, qty=3) for i in range(40)]
+    t0 = time.monotonic()
+    with pytest.raises(ExactTimeoutError) as ei:
+        es.ExactSolver().solve(parts, STOCK)
+    assert ei.value.code == "E010"
+    assert time.monotonic() - t0 < 5  # 必须在时限附近结束，不能卡死
 
 
 def test_cancel_preset_returns_quickly() -> None:

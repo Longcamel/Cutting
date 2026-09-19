@@ -17,22 +17,24 @@ def test_key_sets_identical() -> None:
 
 
 def test_error_codes_all_present() -> None:
+    # E008（精确模式种数上限）已随 v1.3 移除；现有错误码：E001-E007、E009、E010
     zh = json.loads((LOCALES / "zh_CN.json").read_text(encoding="utf-8"))
-    for code in [f"err.E{i:03d}" for i in range(1, 9)]:
+    for code in [*(f"err.E{i:03d}" for i in range(1, 8)), "err.E009", "err.E010"]:
         assert code in zh, code
+    assert "err.E008" not in zh
 
 
 def test_tr_format_and_missing_fallback() -> None:
     translator.init("zh_CN")
-    expected = "零件种类数 30 超过精确模式上限 25，请改用快速模式"
-    assert translator.tr("err.E008", kinds=30, max=25) == expected
+    expected = "精确模式计算超过 30 秒仍未求出结果，已自动结束任务；建议使用「快速模式」"
+    assert translator.tr("err.E010") == expected
     assert translator.tr("no.such.key") == "no.such.key"  # 缺失降级返回 key
 
 
 def test_tr_bad_placeholder_keeps_text(caplog) -> None:
     translator.init("zh_CN")
     # 占位符参数缺失时不抛异常，返回原文
-    assert "超过" in translator.tr("err.E008")
+    assert "数值非法" in translator.tr("err.E002")
 
 
 def test_set_language_notifies_listeners() -> None:

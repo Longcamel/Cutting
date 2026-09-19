@@ -121,6 +121,7 @@ class MainWindow(QMainWindow):
         p.solveFinished.connect(self._on_solve_finished)
         p.solveFailed.connect(self._on_solve_failed)
         p.issuesFound.connect(self._on_issues_found)
+        p.clearResultsRequested.connect(self._on_clear_results)
 
     # ---- 文件/帮助 菜单 ----
     def _on_import_excel(self) -> None:
@@ -144,7 +145,12 @@ class MainWindow(QMainWindow):
         path = dialogs.ask_file(self, "save", tr("filter.excel"), tr("menu.file.export_excel"))
         if not path:
             return
-        err = self._controller.export_excel(path)
+        c = self._controller
+
+        def _render(p: QPainter, pat: CuttingPattern, scale: float) -> None:
+            render_bar(p, pat, c.parts, c.stock, scale)
+
+        err = self._controller.export_excel(path, _render)
         self._report_export(err, path)
 
     def _on_export_pdf(self) -> None:
@@ -255,6 +261,13 @@ class MainWindow(QMainWindow):
 
     def _on_cancel(self) -> None:
         self._controller.cancel_solve()
+
+    def _on_clear_results(self) -> None:
+        """清除所有计算结果：控制器结果置空，结果面板/切割视图回到空态。"""
+        self._controller.solution = None
+        parts, stock = self._controller.parts, self._controller.stock
+        self.result_panel.show_solution(None, parts, stock)
+        self.cutting_view.show_solution(None, parts, stock)
 
     # ---- retranslate ----
     def retranslate(self) -> None:

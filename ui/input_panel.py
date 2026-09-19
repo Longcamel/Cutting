@@ -8,8 +8,9 @@
 """
 
 import logging
+import time
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QBrush, QColor, QKeyEvent
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -53,17 +54,21 @@ class _PartsTable(QTableWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(0, self.COLS, parent)
         hh = self.horizontalHeader()
-        hh.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        hh.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
-        hh.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        # 数据列均可拖动调宽（需求：所有表头宽度可拖动）；删除按钮列保持固定窄宽
+        for c in range(3):
+            hh.setSectionResizeMode(c, QHeaderView.ResizeMode.Interactive)
         hh.setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)
+        self.setColumnWidth(0, 160)
+        self.setColumnWidth(1, 110)
+        self.setColumnWidth(2, 90)
         self.setColumnWidth(self.COL_DEL, 30)
         self.verticalHeader().setVisible(False)
         self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self._data_rows = 0
-        self._add_btn = QPushButton("＋")
-        self._add_btn.setFlat(True)
-        self._add_btn.clicked.connect(lambda: self.add_row(focus=True))
+        # 「＋」按钮每次 _refresh_add_row 时新建：
+        # removeRow 会销毁行内 cell widget 的 C++ 对象，复用旧按钮会产生悬垂指针
+        # （删除行时报 RuntimeError；窗口最大化重排时访问已释放内存直接崩溃）
+        self._add_btn: QPushButton | None = None
         self._refresh_add_row()
 
     # ---------- 行模型 ----------
@@ -106,12 +111,17 @@ class _PartsTable(QTableWidget):
 
     # ---------- 「＋」加行按钮行（始终位于末尾） ----------
     def _refresh_add_row(self) -> None:
-        if self.rowCount() > self._data_rows:  # 旧加行行存在则删除
+        if self.rowCount() > self._data_rows:  # 旧加行行存在则删除（其中按钮随之销毁）
             self.removeRow(self._data_rows)
+            self._add_btn = None
         r = self._data_rows
         self.insertRow(r)
         self.setSpan(r, 0, 1, self.COLS)
-        self.setCellWidget(r, 0, self._add_btn)
+        btn = QPushButton("＋ " + tr("input.add_row"))
+        btn.setFlat(True)
+        btn.clicked.connect(lambda: self.add_row(focus=True))
+        self._add_btn = btn
+        self.setCellWidget(r, 0, btn)
 
     def _on_del_clicked(self) -> None:
         btn = self.sender()
@@ -145,7 +155,8 @@ class _PartsTable(QTableWidget):
         self.setHorizontalHeaderLabels(
             [tr("input.col_name"), tr("input.col_length"), tr("input.col_qty"), _EMPTY]
         )
-        self._add_btn.setText("＋ " + tr("input.add_row"))
+        if self._add_btn is not None:
+            self._add_btn.setText("＋ " + tr("input.add_row"))
 
 
 class InputPanel(QWidget):
@@ -155,14 +166,20 @@ class InputPanel(QWidget):
     solveRequested = Signal()  # 求解已开始（按钮已切取消态）
     solveFinished = Signal(object)  # Solution
     solveFailed = Signal(list)  # 求解器/领域错误 list[Issue]
+    # 请求清除所有计算结果（由 main_window 复位结果面板/切割视图/控制器）
+    clearResultsRequested = Signal()
     issuesFound = Signal(
         list
-    )  # 录入行级错误或 E008 list[Issue]（Qt Signal 不支持参数化，文档见上）
+    )  # 录入行级错误 list[Issue]（Qt Signal 不支持参数化，文档见上）
 
     def __init__(self, controller: AppController, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._controller = controller
         self._solving = False
+        self._solve_t0 = 0.0  # 求解起始时间（monotonic）
+        self._elapsed_timer = QTimer(self)
+        self._elapsed_timer.setInterval(1000)
+        self._elapsed_timer.timeout.connect(self._on_elapsed_tick)
         self._build_ui()
         self._wire()
         self.restore_from_settings()
@@ -212,11 +229,20 @@ class InputPanel(QWidget):
         mh.addStretch(1)
         root.addWidget(self.grp_mode)
 
+        btn_row = QHBoxLayout()
+        self.btn_clear_rows = QPushButton()  # 删除所有（含导入的）零件行
+        self.btn_clear_results = QPushButton()  # 清除所有计算结果
+        btn_row.addWidget(self.btn_clear_rows)
+        btn_row.addWidget(self.btn_clear_results)
+        root.addLayout(btn_row)
+
         self.btn_calc = QPushButton()
         root.addWidget(self.btn_calc)
 
     def _wire(self) -> None:
         self.btn_calc.clicked.connect(self._on_calc_clicked)
+        self.btn_clear_rows.clicked.connect(self.table.clear_data_rows)
+        self.btn_clear_results.clicked.connect(self.clearResultsRequested.emit)
         self.radio_fast.toggled.connect(self._on_fast_toggled)
         self.radio_exact.toggled.connect(self._on_exact_toggled)
         self.spin_stock.valueChanged.connect(self._push_stock)
@@ -334,16 +360,10 @@ class InputPanel(QWidget):
 
     # ================= 求解控制（T5） =================
     def _on_calc_clicked(self) -> None:
-        if self._solving:
-            self._controller.cancel_solve()
-            self._set_solving(False)
+        if self._solving:  # 求解中按钮已禁用，此处仅兜底
             return
         parts, stock = self.collect()
         if stock is None:  # 行级错误已高亮并发 issuesFound
-            return
-        if self.radio_exact.isChecked() and len(parts) > 25:
-            issue = Issue("E008", detail=str(len(parts)))
-            self.issuesFound.emit([issue])  # 弹窗提示由 main_window 统一处理，避免阻塞
             return
         self._set_solving(True)
         self.solveRequested.emit()
@@ -363,11 +383,29 @@ class InputPanel(QWidget):
         self.solveFailed.emit(issues)
 
     def _set_solving(self, solving: bool) -> None:
+        """求解中：按钮显示「正在计算 + 已用时间」且禁用（取消走状态栏取消按钮）；结束恢复原样。"""
         self._solving = solving
-        self.btn_calc.setText(tr("btn.cancel") if solving else tr("btn.calculate"))
+        if solving:
+            self._solve_t0 = time.monotonic()
+            self._elapsed_timer.start()
+            self.btn_calc.setText(self._solving_text(0))
+        else:
+            self._elapsed_timer.stop()
+            self.btn_calc.setText(tr("btn.calculate"))
+        self.btn_calc.setEnabled(not solving)
+        self.btn_clear_rows.setEnabled(not solving)
+        self.btn_clear_results.setEnabled(not solving)
         self.grp_params.setEnabled(not solving)
         self.grp_parts.setEnabled(not solving)
         self.grp_mode.setEnabled(not solving)
+
+    # ================= 计算耗时显示 =================
+    def _solving_text(self, secs: int) -> str:
+        return tr("btn.solving_elapsed", t=secs)
+
+    def _on_elapsed_tick(self) -> None:
+        if self._solving:
+            self.btn_calc.setText(self._solving_text(int(time.monotonic() - self._solve_t0)))
 
     # ================= 模式（T4） =================
     def _on_fast_toggled(self, checked: bool) -> None:
@@ -403,7 +441,12 @@ class InputPanel(QWidget):
         self.radio_fast.setText(tr("input.mode.fast"))
         self.radio_exact.setText(tr("input.mode.exact"))
         self.table.retranslate()
-        self.btn_calc.setText(tr("btn.cancel") if self._solving else tr("btn.calculate"))
+        self.btn_clear_rows.setText(tr("btn.clear_rows"))
+        self.btn_clear_results.setText(tr("btn.clear_results"))
+        if self._solving:
+            self.btn_calc.setText(self._solving_text(int(time.monotonic() - self._solve_t0)))
+        else:
+            self.btn_calc.setText(tr("btn.calculate"))
 
 
 __all__ = ["InputPanel"]

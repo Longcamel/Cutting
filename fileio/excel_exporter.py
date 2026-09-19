@@ -1,26 +1,35 @@
 """Excel 方案导出（详细设计 §6.2）。
 
-三 Sheet 工作簿：
+三/四 Sheet 工作簿：
 1. 参数统计：公司/项目/材料/原料长度/锯缝/日期 + 统计摘要（与界面 result.stats 同串）
 2. 切割方案：切法# | 明细(名称 长度×n) | 余料 | 根数，列宽自适应
 3. 零件核对：名称 | 长度 | 需求 | 实切 | 差额
+4. 切割示意图（可选）：传入 render_bar 时每切法一张与界面一致的示意图
+   （与 PDF 共用注入渲染契约，fileio 模块层不 import PySide6，仅惰性局部 import）。
 """
 
 import json
 import logging
+import tempfile
+from collections.abc import Callable
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
 
-from core.models import Part, Solution, StockSpec
+from core.models import CuttingPattern, Part, Solution, StockSpec
 
 _logger = logging.getLogger(__name__)
 
 _LOCALES_DIR = Path(__file__).resolve().parent.parent / "i18n"
 _MAX_COL_WIDTH = 60
+_ROW_PX = 20  # Excel 默认行高约 20px（96dpi 下 15pt），用于按位图高度推进锚点行
+
+# render_bar(painter, pattern, scale) —— 由 ui.cutting_view.render_to_painter 注入
+RenderBarFn = Callable[[Any, CuttingPattern, float], None]
 
 
 def _tr(lang: str, key: str, **kw: object) -> str:
@@ -126,16 +135,61 @@ def _fill_check(ws: Worksheet, sol: Solution, parts: list[Part], lang: str) -> N
     _autosize(ws)
 
 
-def save_report(path: str, sol: Solution, parts: list[Part], stock: StockSpec, lang: str) -> None:
-    """写出三 Sheet 报表。写入异常（如文件占用）原样上抛，由 controller 归 E007。"""
+def _fill_diagrams(
+    ws: Worksheet,
+    sol: Solution,
+    stock: StockSpec,
+    lang: str,
+    render_bar: RenderBarFn,
+) -> None:
+    """每切法一张示意图（复用 pdf_reporter 的渲染→PNG 管线，惰性依赖 PySide6/PIL）。
+
+    PNG 先经 PIL 完整读入内存再交给 openpyxl，故临时目录可在 wb.save 前安全清理。
+    """
+    from io import BytesIO
+    from typing import cast
+
+    from openpyxl.drawing.image import Image as XLImage
+
+    from fileio.pdf_reporter import (
+        _bar_png,
+        _RenderBarFn,  # 包内复用已测试的渲染函数
+    )
+
+    ws.title = _tr(lang, "report.sheet.diagrams")
+    row = 1
+    with tempfile.TemporaryDirectory(prefix="cutxlsx_") as tmp:
+        for i, pat in enumerate(sol.patterns, start=1):
+            ws.cell(row=row, column=1, value=_tr(lang, "report.diagram_title", i=i, bars=pat.bars))
+            row += 1
+            png, _w, px_h = _bar_png(pat, stock, cast(_RenderBarFn, render_bar), tmp)
+            buf = BytesIO(Path(png).read_bytes())  # 脱离文件句柄，临时目录可随 with 块删除
+            ws.add_image(XLImage(buf), f"A{row}")
+            row += px_h // _ROW_PX + 2
+
+
+def save_report(
+    path: str,
+    sol: Solution,
+    parts: list[Part],
+    stock: StockSpec,
+    lang: str,
+    render_bar: RenderBarFn | None = None,
+) -> None:
+    """写出三/四 Sheet 报表（传 render_bar 时追加「切割示意图」Sheet）。
+
+    写入异常（如文件占用）原样上抛，由 controller 归 E007。
+    """
     wb = Workbook()
     ws1 = wb.active
     assert ws1 is not None  # noqa: S101
     _fill_params(ws1, sol, stock, lang)
     _fill_patterns(wb.create_sheet(), sol, parts, lang)
     _fill_check(wb.create_sheet(), sol, parts, lang)
+    if render_bar is not None:
+        _fill_diagrams(wb.create_sheet(), sol, stock, lang, render_bar)
     wb.save(path)
-    _logger.info("报表已导出 %s (lang=%s)", path, lang)
+    _logger.info("报表已导出 %s (lang=%s, diagrams=%s)", path, lang, render_bar is not None)
 
 
-__all__ = ["save_report"]
+__all__ = ["RenderBarFn", "save_report"]

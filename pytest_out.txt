@@ -1,0 +1,9 @@
+﻿........................................................................ [ 50%]
+........................................................................ [100%]
+============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16. This returns the bitwise inversion of the underlying int object and is usually not what you expect from negating a bool. Use the 'not' operator for boolean negation or ~int(x) if you really want the bitwise inversion of the underlying int.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+144 passed, 2 warnings in 10.61s

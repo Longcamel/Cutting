@@ -159,16 +159,22 @@ def test_collect_invalid_highlights_and_emits(panel, qtbot):
 
 
 # ---- 模式/求解 ----
-def test_exact_mode_over_25_kinds_emits_e008(panel, qtbot):
-    w, _ = panel
+def test_exact_mode_over_25_kinds_proceeds(panel, qtbot, monkeypatch):
+    # 上限拦截已解除：>25 种精确模式直接开始求解，不再弹 E008
+    w, ctl = panel
     w.radio_exact.setChecked(True)
     for i in range(26):
         w.table.add_row()
         _fill_row(w, i, f"p{i}", "100", "1")
-    with qtbot.waitSignal(w.issuesFound, timeout=1000) as blk:
+    called = {}
+
+    def fake_start(mode, on_progress, on_done, on_error):
+        called["mode"] = mode
+
+    monkeypatch.setattr(ctl, "start_solve", fake_start)
+    with qtbot.waitSignal(w.solveRequested, timeout=1000):
         w._on_calc_clicked()
-    assert [i.code for i in blk.args[0]] == ["E008"]
-    assert w._solving is False
+    assert called["mode"] == "exact"
 
 
 def test_calc_click_starts_solve_and_toggles(panel, qtbot, monkeypatch):
@@ -184,12 +190,8 @@ def test_calc_click_starts_solve_and_toggles(panel, qtbot, monkeypatch):
         w.btn_calc.click()
     assert called["mode"] == "fast"
     assert w._solving is True
-    assert w.btn_calc.text() != ""  # 已切为取消文案
-
-    monkeypatch.setattr(ctl, "cancel_solve", lambda: called.update(cancelled=True))
-    w.btn_calc.click()  # 再点 = 取消
-    assert called.get("cancelled") is True
-    assert w._solving is False
+    assert w.btn_calc.text() != ""  # 已切为「正在计算」文案
+    assert not w.btn_calc.isEnabled()  # 求解中按钮禁用，取消走状态栏取消按钮
 
 
 def test_invalid_input_blocks_solve(panel, qtbot):

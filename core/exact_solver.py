@@ -1,6 +1,7 @@
 """精确模式求解器（详细设计 §3.4）：模式枚举 + OR-Tools CP-SAT。
 
-适用限制：零件种数 n <= MAX_KINDS（默认 25），超出抛 TooManyKindsError(E008)。
+适用限制：模式枚举 + CP-SAT 总时限 MAX_TIME_S=30 秒（枚举/求解共用同一截止时间）；
+时限内无任何可行解（超时）抛 ExactTimeoutError(E010)。
 切口数按 §2 不变式；约束为 Σ a_ip·y_p >= d_i（允许多切）。
 """
 
@@ -13,20 +14,34 @@ from .models import CuttingPattern, Part, Solution, StockSpec
 from .solver_base import ProgressCB, SolverBase
 from .statistics import _cuts_per_bar, compute
 
-MAX_KINDS = 25
-MAX_TIME_S = 30.0
+MAX_TIME_S = 30.0  # 精确模式求解时限（秒）；超时未出可行解即结束并报 E010
 
 
-class TooManyKindsError(ValueError):
-    """零件种数超过精确模式上限，对应错误码 E008。"""
+class ExactTimeoutError(ValueError):
+    """精确模式在时限内求不出可行解（通常是超时），对应错误码 E010。"""
 
-    code = "E008"
+    code = "E010"
 
 
-def enumerate_patterns(lengths: list[int], demand: list[int], stock: StockSpec) -> list[list[int]]:
+class _EnumerationTimeout(Exception):
+    """枚举超过截止时间（内部信号，solve 中转译为 ExactTimeoutError）。"""
+
+
+class _EnumerationAborted(Exception):
+    """枚举中收到取消（内部信号，截断返回已生成部分）。"""
+
+
+def enumerate_patterns(
+    lengths: list[int],
+    demand: list[int],
+    stock: StockSpec,
+    deadline: float | None = None,
+    cancel: threading.Event | None = None,
+) -> list[list[int]]:
     """DFS 生成所有可行切割组合（含 kerf，末段豁免，§3.4 步骤1）。
 
     组合按"长度降序、下标非降"生成避免排列重复；xi 上界 min(d_i, L//li)。
+    deadline（monotonic 秒）到期抛 _EnumerationTimeout；cancel 置位则截断返回部分结果。
     """
     n = len(lengths)
     eff_cap = stock.length + stock.kerf
@@ -35,8 +50,10 @@ def enumerate_patterns(lengths: list[int], demand: list[int], stock: StockSpec) 
     ub = [min(demand[i], stock.length // lengths[i]) for i in order]
     patterns: list[list[int]] = []
     cur = [0] * n
+    checks = 0  # 每 4096 个组合检查一次时限/取消，降低开销
 
     def dfs(pos: int, used: int) -> None:
+        nonlocal checks
         if pos == n:
             return
         i = order[pos]
@@ -45,10 +62,19 @@ def enumerate_patterns(lengths: list[int], demand: list[int], stock: StockSpec) 
             cur[i] = x
             if x > 0:
                 patterns.append(cur.copy())
+                checks += 1
+                if checks & 0xFFF == 0:
+                    if cancel is not None and cancel.is_set():
+                        raise _EnumerationAborted
+                    if deadline is not None and time.monotonic() > deadline:
+                        raise _EnumerationTimeout
             dfs(pos + 1, used + x * unit[pos])
         cur[i] = 0
 
-    dfs(0, 0)
+    try:
+        dfs(0, 0)
+    except _EnumerationAborted:
+        pass
     return patterns
 
 
@@ -88,14 +114,17 @@ class ExactSolver(SolverBase):
         t0 = time.monotonic()
         if not parts:
             return Solution(patterns=[], exact=True, elapsed_s=0.0)
-        if len(parts) > MAX_KINDS:
-            raise TooManyKindsError(f"零件种数{len(parts)}>{MAX_KINDS}，请改用快速模式")
 
         lengths = [p.length for p in parts]
         demand = [p.qty for p in parts]
         if on_progress is not None:
             on_progress(5)
-        pats = enumerate_patterns(lengths, demand, stock)
+        deadline = t0 + MAX_TIME_S  # 枚举与求解共用同一截止时间
+        try:
+            pats = enumerate_patterns(lengths, demand, stock, deadline=deadline, cancel=cancel)
+        except _EnumerationTimeout as e:
+            # 枚举阶段即超时，无任何可行解 → E010
+            raise ExactTimeoutError("精确模式在 30 秒内未求出可行解") from e
         if cancel is not None and cancel.is_set():
             return Solution(patterns=[], exact=False, elapsed_s=time.monotonic() - t0)
         if on_progress is not None:
@@ -111,7 +140,8 @@ class ExactSolver(SolverBase):
         _ = total_lb  # 下界交由 CP-SAT 推导
 
         solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds = MAX_TIME_S
+        # 求解阶段只能用枚举剩余的时间，保证总时长不超过 MAX_TIME_S
+        solver.parameters.max_time_in_seconds = max(0.1, deadline - time.monotonic())
         cb = _CancelCallback(cancel)
         status = solver.solve(model, cb)
         if on_progress is not None:
@@ -135,9 +165,12 @@ class ExactSolver(SolverBase):
             sol.exact = bool(status == cp_model.OPTIMAL) and not (
                 cancel is not None and cancel.is_set()
             )
+        elif cancel is None or not cancel.is_set():
+            # 时限内无任何可行解（几乎总是 30 s 超时或问题过大）→ 结束任务并提示
+            raise ExactTimeoutError("精确模式在 30 秒内未求出可行解")
         if on_progress is not None:
             on_progress(100)
         return sol
 
 
-__all__ = ["ExactSolver", "MAX_KINDS", "MAX_TIME_S", "TooManyKindsError", "enumerate_patterns"]
+__all__ = ["ExactSolver", "ExactTimeoutError", "MAX_TIME_S", "enumerate_patterns"]

@@ -336,11 +336,12 @@ wheels = [
 
 [[package]]
 name = "cutting"
-version = "0.1.0"
+version = "1.2.0"
 source = { virtual = "." }
 dependencies = [
     { name = "openpyxl" },
     { name = "ortools" },
+    { name = "pillow" },
     { name = "pyside6" },
     { name = "reportlab" },
 ]
@@ -361,6 +362,7 @@ dev = [
 requires-dist = [
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "ortools", specifier = ">=9.15.6755" },
+    { name = "pillow", specifier = ">=12.3.0" },
     { name = "pyside6", specifier = ">=6.11.2" },
     { name = "reportlab", specifier = ">=5.0.1" },
 ]

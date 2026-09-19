@@ -18,6 +18,7 @@ a = Analysis(
     binaries=binaries_o,
     datas=datas + datas_o,
     hiddenimports=["fileio.excel_importer", "fileio.excel_exporter", "fileio.pdf_reporter"]
+    + ["PIL.Image", "PIL.PngImagePlugin"]  # Excel示意图：openpyxl 惰性依赖 PIL
     + list(hiddenimports_o),
     hookspath=[],
     hooksconfig={},

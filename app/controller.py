@@ -147,15 +147,15 @@ class AppController:
             self._worker.cancel()
 
     # ---- 导出（同步，需已有 solution，否则返回 E006）----
-    def export_excel(self, path: str) -> str | None:
-        """返回 None=成功，否则错误码（E006/E007）。"""
+    def export_excel(self, path: str, render_bar: RenderBarFn | None = None) -> str | None:
+        """返回 None=成功，否则错误码（E006/E007）。render_bar 由 ui 注入（切割示意图）。"""
         if self.solution is None:
             return "E006"
         excel_exporter = importlib.import_module("fileio.excel_exporter")
 
         try:
             excel_exporter.save_report(
-                path, self.solution, self.parts, self.stock, self._lang())
+                path, self.solution, self.parts, self.stock, self._lang(), render_bar=render_bar)
         except Exception as e:  # noqa: BLE001 —— io 异常归 E007
             _logger.warning("excel export failed: %s", e)
             return "E007"

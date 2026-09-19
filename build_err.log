@@ -1,0 +1,5 @@
+631 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.7
+649 INFO: Python: 3.12.11
+731 INFO: Platform: Windows-10-10.0.19045-SP0
+748 INFO: Python environment: D:\Desktop\Cutting\.venv
+97873 WARNING: Hidden import "jinja2" not found!

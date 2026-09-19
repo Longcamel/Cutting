@@ -100,7 +100,8 @@ class ResultPanel(QWidget):
         t = QTableWidget(0, cols)
         t.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         t.verticalHeader().setVisible(False)
-        t.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        # 表头可拖动调宽（需求：所有表头宽度可拖动）；末列随窗口拉伸
+        t.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         t.horizontalHeader().setStretchLastSection(True)
         return t
 
@@ -124,6 +125,7 @@ class ResultPanel(QWidget):
             line += "  " + tr("result.optimal")
         elif self._exact_mode:
             line += "  " + tr("result.not_optimal")
+        line += "  " + tr("result.elapsed", t=f"{sol.elapsed_s:.2f}")
         self.lbl_stats.setText(line)
         self._fill_patterns(sol)
         self._fill_check(sol)

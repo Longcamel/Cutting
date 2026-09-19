@@ -2,7 +2,7 @@
 
 决策 D10：
 - format_issue 行号一律显示 1 基（Issue.row 为 0 基下标，row>=0 时显示 row+1）；
-- 模板缺参时自动补通用 kwargs（row/detail/max_len/kinds/max），
+- 模板缺参时自动补通用 kwargs（row/detail/max_len），
   调用方可经 **extra 补充领域参数（如 length/stock）；未用的 kwargs 被 str.format 忽略。
 - show_issues/show_info 内部调 QDialog.exec()，测试中 monkeypatch exec 拦截。
 """
@@ -24,9 +24,6 @@ from PySide6.QtWidgets import (
 from core.validator import MAX_NAME_LEN, Issue
 from i18n.translator import tr
 
-# 精确模式零件种类上限（与 ui.input_panel / core.exact_solver 保持一致）
-EXACT_MAX_KINDS = 25
-
 
 def format_issue(issue: Issue, **extra: Any) -> str:
     """单条 Issue → 用户可读文本（词条 err.<code>）。"""
@@ -34,8 +31,6 @@ def format_issue(issue: Issue, **extra: Any) -> str:
         "row": issue.row + 1 if issue.row >= 0 else "",
         "detail": issue.detail,
         "max_len": MAX_NAME_LEN,
-        "kinds": issue.detail,
-        "max": EXACT_MAX_KINDS,
     }
     kwargs.update(extra)
     return tr(f"err.{issue.code}", **kwargs)
@@ -85,4 +80,4 @@ def ask_file(
     return path or None
 
 
-__all__ = ["EXACT_MAX_KINDS", "ask_file", "format_issue", "show_info", "show_issues"]
+__all__ = ["ask_file", "format_issue", "show_info", "show_issues"]
