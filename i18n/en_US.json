@@ -47,6 +47,8 @@
   "menu.language": "&Language",
   "menu.language.en_US": "English",
   "menu.language.zh_CN": "中文",
+  "tip.github": "GitHub project page",
+  "tip.website": "Project documentation site",
   "report.company": "Company",
   "report.date": "Date",
   "report.kerf": "Kerf",

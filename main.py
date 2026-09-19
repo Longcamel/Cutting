@@ -64,6 +64,12 @@ def main() -> None:
     from PySide6.QtWidgets import QApplication  # noqa: PLC0415 —— 惰性，便于无界面导入
 
     app = QApplication.instance() or QApplication(sys.argv)
+    if isinstance(app, QApplication):
+        from ui.resources import load_icon  # noqa: PLC0415
+
+        app_icon = load_icon("app.png")
+        if not app_icon.isNull():
+            app.setWindowIcon(app_icon)
     settings = SettingsStore()
     cfg = settings.load()
     translator.init(str(cfg.get("language", "zh_CN")))

@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QActionGroup, QCloseEvent
+from PySide6.QtCore import QSize, Qt, QUrl
+from PySide6.QtGui import QAction, QActionGroup, QCloseEvent, QDesktopServices
 
 if TYPE_CHECKING:
     from PySide6.QtGui import QPainter
@@ -21,11 +21,13 @@ if TYPE_CHECKING:
 
     from core.models import CuttingPattern
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QMainWindow,
     QMenu,
     QProgressBar,
     QPushButton,
     QSplitter,
+    QToolButton,
     QWidget,
 )
 
@@ -35,10 +37,15 @@ from i18n.translator import current_language, on_language_changed, set_language,
 from ui import dialogs
 from ui.cutting_view import CuttingView, render_bar
 from ui.input_panel import InputPanel
+from ui.resources import load_icon
 from ui.result_panel import ResultPanel
 
 _INPUT_WIDTH = 380
 _START_SIZE = (1200, 800)
+
+# 菜单栏右上角跳转链接（README/Pages 同款地址，注意 Pages 大小写敏感）
+URL_GITHUB = "https://github.com/Longcamel/Cutting"
+URL_WEBSITE = "https://longcamel.github.io/Cutting/"
 
 
 class MainWindow(QMainWindow):
@@ -113,6 +120,28 @@ class MainWindow(QMainWindow):
         self._menu_help: QMenu = bar.addMenu("")
         self._act_template = self._menu_help.addAction("", self._on_template)
         self._act_about = self._menu_help.addAction("", self._on_about)
+
+        # 右上角：GitHub / 文档站 两个图标按钮，点击跳转浏览器
+        corner = QWidget(self)
+        lay = QHBoxLayout(corner)
+        lay.setContentsMargins(0, 0, 6, 0)
+        lay.setSpacing(2)
+        self._btn_github = self._link_button(corner, "github.png", URL_GITHUB)
+        self._btn_web = self._link_button(corner, "web.png", URL_WEBSITE)
+        lay.addWidget(self._btn_github)
+        lay.addWidget(self._btn_web)
+        bar.setCornerWidget(corner, Qt.Corner.TopRightCorner)
+
+    @staticmethod
+    def _link_button(parent: QWidget, icon_name: str, url: str) -> QToolButton:
+        """无边框图标按钮，点击用系统浏览器打开 url。"""
+        btn = QToolButton(parent)
+        btn.setIcon(load_icon(icon_name))
+        btn.setIconSize(QSize(20, 20))
+        btn.setAutoRaise(True)
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.clicked.connect(lambda _checked=False, u=url: QDesktopServices.openUrl(QUrl(u)))
+        return btn
 
     def _wire(self) -> None:
         p = self.input_panel
@@ -285,6 +314,8 @@ class MainWindow(QMainWindow):
         self._act_template.setText(tr("menu.help.template"))
         self._act_about.setText(tr("menu.help.about"))
         self._btn_cancel.setText(tr("btn.cancel"))
+        self._btn_github.setToolTip(tr("tip.github"))
+        self._btn_web.setToolTip(tr("tip.website"))
         # 同步单选状态
         cur = current_language()
         self._lang_actions.get(cur, self._lang_actions["zh_CN"]).setChecked(True)

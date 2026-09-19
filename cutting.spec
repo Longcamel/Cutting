@@ -8,6 +8,8 @@ from PyInstaller.utils.hooks import collect_all
 datas = [
     (str(p), "i18n") for p in Path("i18n").glob("*.json")
 ] + [(str(p), "assets/fonts") for p in Path("assets/fonts").glob("*")]
+# 界面图标（窗口 logo、菜单栏 GitHub/文档站按钮）
+datas += [(str(p), "assets/icons") for p in Path("assets/icons").glob("*.png")]
 
 # ortools 的 cp_model_helper 依赖原生 DLL，PyInstaller 默认收集不全 → collect_all
 datas_o, binaries_o, hiddenimports_o = collect_all("ortools")
@@ -35,6 +37,7 @@ exe = EXE(
     a.datas,
     [],
     name="Cutting",
+    icon="assets/icons/app.ico",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

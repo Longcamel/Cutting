@@ -134,3 +134,22 @@ def test_cancel_button(win: MainWindow, monkeypatch: pytest.MonkeyPatch) -> None
     win.input_panel.solveRequested.emit()
     win._btn_cancel.click()
     assert called == [True]
+
+
+def test_corner_link_buttons(win: MainWindow, monkeypatch: pytest.MonkeyPatch) -> None:
+    """菜单栏右上角 GitHub/文档站图标按钮：图标非空、tooltip 随语言、点击跳转。"""
+    from PySide6.QtGui import QDesktopServices
+
+    assert not win._btn_github.icon().isNull()
+    assert not win._btn_web.icon().isNull()
+    assert win._btn_github.toolTip() == "GitHub 项目主页"
+    assert win._btn_web.toolTip() == "项目文档网站"
+
+    opened: list[str] = []
+    monkeypatch.setattr(QDesktopServices, "openUrl", lambda url: opened.append(url.toString()))
+    win._btn_github.click()
+    win._btn_web.click()
+    assert opened == [
+        "https://github.com/Longcamel/Cutting",
+        "https://longcamel.github.io/Cutting/",
+    ]

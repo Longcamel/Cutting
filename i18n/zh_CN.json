@@ -47,6 +47,8 @@
   "menu.language": "语言(&L)",
   "menu.language.en_US": "English",
   "menu.language.zh_CN": "中文",
+  "tip.github": "GitHub 项目主页",
+  "tip.website": "项目文档网站",
   "report.company": "公司",
   "report.date": "日期",
   "report.kerf": "锯缝",
