@@ -1,0 +1,195 @@
+493 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.7
+497 INFO: Python: 3.12.11
+531 INFO: Platform: Windows-10-10.0.19045-SP0
+531 INFO: Python environment: D:\Desktop\Cutting\.venv
+531 INFO: Removing temporary files and cleaning cache in C:\Users\Administrator\AppData\Local\pyinstaller
+2051 INFO: Module search paths (PYTHONPATH):
+['D:\\Desktop\\Cutting\\.venv\\Scripts\\pyinstaller.exe',
+ 'C:\\Users\\Administrator\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none\\python312.zip',
+ 'C:\\Users\\Administrator\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none\\DLLs',
+ 'C:\\Users\\Administrator\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none\\Lib',
+ 'C:\\Users\\Administrator\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none',
+ 'D:\\Desktop\\Cutting\\.venv',
+ 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages',
+ 'D:\\Desktop\\Cutting']
+3032 INFO: Appending 'binaries' from .spec
+3036 INFO: Appending 'datas' from .spec
+3069 INFO: checking Analysis
+3069 INFO: Building Analysis because Analysis-00.toc is non existent
+3069 INFO: Looking for Python shared library...
+3069 INFO: Using Python shared library: C:\Users\Administrator\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\python312.dll
+3069 INFO: Running Analysis Analysis-00.toc
+3069 INFO: Target bytecode optimization level: 0
+3069 INFO: Initializing module dependency graph...
+3069 INFO: Initializing module graph hook caches...
+3094 INFO: Analyzing modules for base_library.zip ...
+5669 INFO: Processing standard module hook 'hook-encodings.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+6445 INFO: Processing standard module hook 'hook-math.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+8062 INFO: Processing standard module hook 'hook-pickle.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+9427 INFO: Processing standard module hook 'hook-heapq.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+10015 INFO: Caching module dependency graph...
+10059 INFO: Analyzing D:\Desktop\Cutting\main.py
+10094 INFO: Processing standard module hook 'hook-PySide6.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+10368 INFO: Processing standard module hook 'hook-shiboken6.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+10562 INFO: Processing standard module hook 'hook-PySide6.QtNetwork.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+13451 INFO: Processing standard module hook 'hook-PySide6.QtCore.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+16841 INFO: Processing standard module hook 'hook-_ctypes.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+16930 INFO: Processing standard module hook 'hook-numpy.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+17344 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+17348 INFO: SetuptoolsInfo: initializing cached setuptools info...
+18949 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+19143 INFO: Processing standard module hook 'hook-xml.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+20210 INFO: Processing standard module hook 'hook-platform.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+20373 INFO: Processing standard module hook 'hook-sysconfig.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+20841 INFO: Processing standard module hook 'hook-webbrowser.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+22243 INFO: Processing standard module hook 'hook-difflib.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+23353 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+23744 INFO: Processing standard module hook 'hook-pandas.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+30319 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+32372 INFO: Processing standard module hook 'hook-pandas.io.formats.style.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+39830 INFO: Processing standard module hook 'hook-pandas.plotting.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+40616 INFO: Processing standard module hook 'hook-dateutil.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+40777 INFO: Processing pre-safe-import-module hook 'hook-six.moves.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+42180 INFO: Processing standard module hook 'hook-openpyxl.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+42523 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+43041 INFO: Processing standard module hook 'hook-PIL.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+43214 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+44309 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+46296 INFO: Processing standard module hook 'hook-sqlite3.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+47177 INFO: Processing standard module hook 'hook-pandas.io.clipboard.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+47318 INFO: Processing standard module hook 'hook-xml.dom.domreg.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+49117 INFO: Processing standard module hook 'hook-PySide6.QtWidgets.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+54741 INFO: Processing standard module hook 'hook-PySide6.QtGui.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+90121 INFO: Processing standard module hook 'hook-PySide6.QtPrintSupport.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+91308 INFO: Analyzing hidden import 'fileio.excel_exporter'
+91316 INFO: Analyzing hidden import 'fileio.pdf_reporter'
+91504 INFO: Processing standard module hook 'hook-reportlab.lib.utils.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+91618 INFO: Processing standard module hook 'hook-reportlab.pdfbase._fontdata.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+95062 INFO: Analyzing hidden import 'ortools.algorithms'
+95066 INFO: Analyzing hidden import 'ortools.algorithms.python'
+95066 INFO: Analyzing hidden import 'ortools.algorithms.python.knapsack_solver'
+95070 INFO: Analyzing hidden import 'ortools.bop'
+95070 INFO: Analyzing hidden import 'ortools.bop.bop_parameters_pb2'
+95783 INFO: Analyzing hidden import 'ortools.constraint_solver'
+95783 INFO: Analyzing hidden import 'ortools.constraint_solver._pywrapcp'
+95783 INFO: Analyzing hidden import 'ortools.constraint_solver.assignment_pb2'
+95787 INFO: Analyzing hidden import 'ortools.constraint_solver.pywrapcp'
+95990 INFO: Analyzing hidden import 'ortools.constraint_solver.routing_enums_pb2'
+95990 INFO: Analyzing hidden import 'ortools.constraint_solver.routing_heuristic_parameters_pb2'
+95994 INFO: Analyzing hidden import 'ortools.constraint_solver.routing_ils_pb2'
+95998 INFO: Analyzing hidden import 'ortools.constraint_solver.routing_parameters_pb2'
+96006 INFO: Analyzing hidden import 'ortools.constraint_solver.search_limit_pb2'
+96010 INFO: Analyzing hidden import 'ortools.constraint_solver.search_stats_pb2'
+96010 INFO: Analyzing hidden import 'ortools.glop'
+96014 INFO: Analyzing hidden import 'ortools.glop.parameters_pb2'
+96014 INFO: Analyzing hidden import 'ortools.graph'
+96018 INFO: Analyzing hidden import 'ortools.graph.flow_problem_pb2'
+96021 INFO: Analyzing hidden import 'ortools.graph.python'
+96021 INFO: Analyzing hidden import 'ortools.graph.python.linear_sum_assignment'
+96029 INFO: Analyzing hidden import 'ortools.graph.python.max_flow'
+96039 INFO: Analyzing hidden import 'ortools.graph.python.min_cost_flow'
+96043 INFO: Analyzing hidden import 'ortools.init'
+96047 INFO: Analyzing hidden import 'ortools.init.python'
+96047 INFO: Analyzing hidden import 'ortools.init.python.init'
+96051 INFO: Analyzing hidden import 'ortools.linear_solver'
+96056 INFO: Analyzing hidden import 'ortools.linear_solver._pywraplp'
+96056 INFO: Analyzing hidden import 'ortools.linear_solver.linear_solver_pb2'
+96072 INFO: Analyzing hidden import 'ortools.linear_solver.python'
+96072 INFO: Analyzing hidden import 'ortools.linear_solver.python.linear_solver_natural_api'
+96092 INFO: Analyzing hidden import 'ortools.linear_solver.python.model_builder'
+96188 INFO: Analyzing hidden import 'ortools.linear_solver.pywraplp'
+96208 INFO: Analyzing hidden import 'ortools.math_opt'
+96212 INFO: Analyzing hidden import 'ortools.math_opt.callback_pb2'
+96216 INFO: Analyzing hidden import 'ortools.math_opt.core'
+96220 INFO: Analyzing hidden import 'ortools.math_opt.core.python'
+96220 INFO: Analyzing hidden import 'ortools.math_opt.core.python.solver'
+96224 INFO: Analyzing hidden import 'ortools.math_opt.elemental'
+96228 INFO: Analyzing hidden import 'ortools.math_opt.elemental.python'
+96228 INFO: Analyzing hidden import 'ortools.math_opt.elemental.python.cpp_elemental'
+96232 INFO: Analyzing hidden import 'ortools.math_opt.elemental.python.enums'
+96237 INFO: Analyzing hidden import 'ortools.math_opt.infeasible_subsystem_pb2'
+96271 INFO: Analyzing hidden import 'ortools.math_opt.io'
+96271 INFO: Analyzing hidden import 'ortools.math_opt.io.python'
+96275 INFO: Analyzing hidden import 'ortools.math_opt.io.python.mps_converter'
+96275 INFO: Analyzing hidden import 'ortools.math_opt.model_parameters_pb2'
+96283 INFO: Analyzing hidden import 'ortools.math_opt.model_pb2'
+96288 INFO: Analyzing hidden import 'ortools.math_opt.model_update_pb2'
+96296 INFO: Analyzing hidden import 'ortools.math_opt.parameters_pb2'
+96313 INFO: Analyzing hidden import 'ortools.math_opt.python'
+96313 INFO: Analyzing hidden import 'ortools.math_opt.python.bounded_expressions'
+96321 INFO: Analyzing hidden import 'ortools.math_opt.python.callback'
+96529 INFO: Analyzing hidden import 'ortools.math_opt.python.compute_infeasible_subsystem_result'
+96594 INFO: Analyzing hidden import 'ortools.math_opt.python.errors'
+96599 INFO: Analyzing hidden import 'ortools.math_opt.python.expressions'
+96601 INFO: Analyzing hidden import 'ortools.math_opt.python.init_arguments'
+96607 INFO: Analyzing hidden import 'ortools.math_opt.python.ipc'
+96609 INFO: Analyzing hidden import 'ortools.math_opt.python.ipc.proto_converter'
+96642 INFO: Analyzing hidden import 'ortools.math_opt.python.ipc.remote_http_solve'
+96969 INFO: Analyzing hidden import 'ortools.math_opt.python.statistics'
+96977 INFO: Analyzing hidden import 'ortools.math_opt.python.testing'
+96977 INFO: Analyzing hidden import 'ortools.math_opt.python.testing.compare_proto'
+96981 INFO: Analyzing hidden import 'ortools.math_opt.python.testing.proto_matcher'
+96981 INFO: Analyzing hidden import 'ortools.packing'
+96985 INFO: Analyzing hidden import 'ortools.packing.multiple_dimensions_bin_packing_pb2'
+96985 INFO: Analyzing hidden import 'ortools.packing.vector_bin_packing_pb2'
+96989 INFO: Analyzing hidden import 'ortools.pdlp.python'
+96989 INFO: Analyzing hidden import 'ortools.pdlp.python.pdlp'
+96993 INFO: Analyzing hidden import 'ortools.sat.boolean_problem_pb2'
+96997 INFO: Analyzing hidden import 'ortools.sat.colab'
+96997 INFO: Analyzing hidden import 'ortools.sat.colab.flags'
+97001 INFO: Analyzing hidden import 'ortools.sat.colab.visualization'
+97009 INFO: Analyzing hidden import 'ortools.sat.cp_model_pb2'
+97013 INFO: Analyzing hidden import 'ortools.sat.cp_model_service_pb2'
+97017 INFO: Analyzing hidden import 'ortools.sat.lrat_pb2'
+97021 INFO: Analyzing hidden import 'ortools.sat.routes_support_graph_pb2'
+97021 INFO: Analyzing hidden import 'ortools.scheduling'
+97025 INFO: Analyzing hidden import 'ortools.scheduling.course_scheduling_pb2'
+97029 INFO: Analyzing hidden import 'ortools.scheduling.jobshop_scheduling_pb2'
+97042 INFO: Analyzing hidden import 'ortools.scheduling.python'
+97042 INFO: Analyzing hidden import 'ortools.scheduling.python.rcpsp'
+97046 INFO: Analyzing hidden import 'ortools.scheduling.rcpsp_pb2'
+97050 INFO: Analyzing hidden import 'ortools.set_cover'
+97050 INFO: Analyzing hidden import 'ortools.set_cover.capacity_pb2'
+97054 INFO: Analyzing hidden import 'ortools.set_cover.python'
+97054 INFO: Analyzing hidden import 'ortools.set_cover.python.set_cover'
+97069 INFO: Analyzing hidden import 'ortools.set_cover.set_cover_pb2'
+97078 INFO: Analyzing hidden import 'ortools.util.python.pybind_solve_interrupter_testing'
+97078 INFO: Processing module hooks (post-graph stage)...
+97097 WARNING: Hidden import "jinja2" not found!
+97483 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+97548 INFO: Processing standard module hook 'hook-tzdata.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+98887 INFO: Performing binary vs. data reclassification (951 entries)
+99124 INFO: Looking for ctypes DLLs
+99198 INFO: Analyzing run-time hooks ...
+99207 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+99210 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+99213 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+99216 INFO: Including run-time hook 'pyi_rth_pyside6.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+99218 INFO: Processing pre-find-module-path hook 'hook-_pyi_rth_utils.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+99221 INFO: Processing standard module hook 'hook-_pyi_rth_utils.py' from 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+99284 INFO: Creating base_library.zip...
+99312 INFO: Looking for dynamic libraries
+104592 INFO: Extra DLL search directories (AddDllDirectory): ['D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\shiboken6', 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\pandas.libs', 'D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\numpy.libs']
+104592 INFO: Extra DLL search directories (PATH): ['D:\\Desktop\\Cutting\\.venv\\Lib\\site-packages\\PySide6']
+110262 INFO: Warnings written to D:\Desktop\Cutting\build\cutting\warn-cutting.txt
+110433 INFO: Graph cross-reference written to D:\Desktop\Cutting\build\cutting\xref-cutting.html
+110514 INFO: checking PYZ
+110514 INFO: Building PYZ because PYZ-00.toc is non existent
+110514 INFO: Building PYZ (ZlibArchive) D:\Desktop\Cutting\build\cutting\PYZ-00.pyz
+112155 INFO: Building PYZ (ZlibArchive) D:\Desktop\Cutting\build\cutting\PYZ-00.pyz completed successfully.
+112208 INFO: checking PKG
+112212 INFO: Building PKG because PKG-00.toc is non existent
+112212 INFO: Building PKG (CArchive) Cutting.pkg
+148616 INFO: Building PKG (CArchive) Cutting.pkg completed successfully.
+148644 INFO: Bootloader D:\Desktop\Cutting\.venv\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+148644 INFO: checking EXE
+148644 INFO: Building EXE because EXE-00.toc is non existent
+148644 INFO: Building EXE from EXE-00.toc
+148656 INFO: Copying bootloader EXE to D:\Desktop\Cutting\dist\Cutting.exe
+148674 INFO: Copying icon to EXE
+148686 INFO: Copying 0 resources to EXE
+148686 INFO: Embedding manifest in EXE
+148694 INFO: Appending PKG archive to EXE
+148817 INFO: Fixing EXE headers
+150200 INFO: Building EXE from EXE-00.toc completed successfully.
+150232 INFO: Build complete! The results are available in: D:\Desktop\Cutting\dist

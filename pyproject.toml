@@ -1,0 +1,51 @@
+[project]
+name = "cutting"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl>=3.1.5",
+    "ortools>=9.15.6755",
+    "pyside6>=6.11.2",
+    "reportlab>=5.0.1",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pyinstaller>=6.22.3",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-qt>=4.5.0",
+    "ruff>=0.16.8",
+    "types-openpyxl>=3.1.5.20260827",
+    "types-reportlab>=5.0.0.20260911",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+warn_redundant_casts = true
+exclude = '^(\.venv|build|dist|doc)/'
+
+[[tool.mypy.overrides]]
+module = ["core.*", "app.*", "fileio.*", "i18n.*"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["ui.*", "main", "tests.*"]
+ignore_errors = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
