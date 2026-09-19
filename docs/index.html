@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一维下料优化 · 1D Cutting Optimizer</title>
+<link rel="icon" href="images/favicon.png">
+<style>
+:root{--primary:#2563eb;--dark:#0f172a;--gray:#64748b;--bg:#f8fafc;--card:#fff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--dark);line-height:1.7}
+header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;text-align:center;padding:64px 20px 48px}
+header img{width:140px;height:140px;border-radius:28px;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+header h1{font-size:2.4rem;margin:20px 0 8px}
+header p{opacity:.9;font-size:1.1rem}
+.badges{margin-top:16px}
+.badges span{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 14px;margin:3px;font-size:.85rem}
+nav{position:sticky;top:0;background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;justify-content:center;gap:8px;padding:10px;z-index:10}
+nav button{border:1px solid #e2e8f0;background:#fff;border-radius:8px;padding:6px 18px;cursor:pointer;font-size:.95rem;color:var(--gray)}
+nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+main{max-width:1000px;margin:0 auto;padding:40px 20px}
+section{margin-bottom:48px}
+h2{font-size:1.6rem;border-left:5px solid var(--primary);padding-left:12px;margin-bottom:18px}
+h3{margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid #e2e8f0;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h3{margin-top:0;color:var(--primary)}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden}
+th,td{border:1px solid #e2e8f0;padding:10px 14px;text-align:left}
+th{background:#eff6ff}
+.shot{text-align:center}
+.shot img{max-width:100%;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:18px;overflow:auto;font-size:.9rem}
+.btn{display:inline-block;background:var(--primary);color:#fff;text-decoration:none;border-radius:10px;padding:12px 28px;font-size:1.05rem;margin:6px}
+.btn.ghost{background:#fff;color:var(--primary);border:2px solid var(--primary)}
+footer{text-align:center;color:var(--gray);padding:30px;font-size:.9rem;border-top:1px solid #e2e8f0}
+[lang]{display:none}
+[lang].on{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="images/logo.png" alt="logo">
+  <h1 data-zh="一维下料优化" data-en="1D Cutting Optimizer">一维下料优化</h1>
+  <p data-zh="面向钢管 / 型钢工厂的一维切割下料优化工具 —— 最大限度减少废料，提高材料利用率"
+     data-en="A 1D cutting-stock optimizer for steel tubes & profiles — minimize waste, maximize utilization">面向钢管 / 型钢工厂的一维切割下料优化工具 —— 最大限度减少废料，提高材料利用率</p>
+  <div class="badges">
+    <span>v1.3.0</span><span>Windows</span><span>PySide6</span><span>OR-Tools CP-SAT</span><span>MIT License</span>
+  </div>
+</header>
+
+<nav>
+  <button id="btn-zh" class="active" onclick="setLang('zh')">中文</button>
+  <button id="btn-en" onclick="setLang('en')">English</button>
+</nav>
+
+<main>
+
+<!-- ================= 中文 ================= -->
+<div lang="zh" class="on">
+
+<section>
+  <h2>✨ 功能特性</h2>
+  <div class="grid">
+    <div class="card"><h3>⚡ 双模式求解</h3><p>快速启发式：千级零件秒出结果；精确模式基于 OR-Tools CP-SAT，求得<b>全局最优解</b>（✔最优），超过 30 秒自动终止并建议改用快速模式。计算时按钮实时显示「正在计算… N 秒」。</p></div>
+    <div class="card"><h3>📥 便捷录入</h3><p>表格手工录入（增删改、列宽拖拽），或 Excel 一键导入（含模板下载与逐行校验）。原料长度、锯缝损耗、材料名称均可设置。</p></div>
+    <div class="card"><h3>📊 结果可视</h3><p>按比例切割示意图（零件标注长度、余料灰色、相同切法合并 ×N），方案汇总表 + 零件核对表，统计栏显示利用率、废料等关键指标。</p></div>
+    <div class="card"><h3>📄 报表输出</h3><p>导出 Excel（含切割示意图）、导出 PDF 报告，可直接打印交车间执行。界面支持中文 / English 双语。</p></div>
+  </div>
+</section>
+
+<section class="shot">
+  <h2>🖥 软件界面</h2>
+  <img src="images/screenshot_main.png" alt="软件主界面">
+</section>
+
+<section>
+  <h2>🚀 快速开始</h2>
+  <h3>方式一：直接运行（推荐）</h3>
+  <p>从 Releases 下载 <code>一维下料优化.exe</code>，双击即可运行，无需安装 Python。</p>
+  <h3>方式二：源码运行</h3>
+  <pre>git clone https://github.com/YOUR-NAME/cutting.git
+cd cutting
+uv sync                # 需要 Python >= 3.12 与 uv
+uv run python main.py</pre>
+</section>
+
+<section>
+  <h2>🛠 技术栈</h2>
+  <table>
+    <tr><th>层</th><th>技术</th></tr>
+    <tr><td>GUI</td><td>PySide6 (Qt 6)</td></tr>
+    <tr><td>精确求解</td><td>Google OR-Tools CP-SAT</td></tr>
+    <tr><td>Excel / PDF</td><td>openpyxl · reportlab · pillow</td></tr>
+    <tr><td>工程质量</td><td>uv · pytest（144 项测试）· mypy · ruff</td></tr>
+    <tr><td>打包</td><td>PyInstaller 单文件 exe</td></tr>
+  </table>
+</section>
+
+<section style="text-align:center">
+  <a class="btn" href="https://github.com/YOUR-NAME/cutting/releases">⬇ 下载最新版</a>
+  <a class="btn ghost" href="https://github.com/YOUR-NAME/cutting">⭐ GitHub 仓库</a>
+</section>
+
+</div>
+
+<!-- ================= English ================= -->
+<div lang="en">
+
+<section>
+  <h2>✨ Features</h2>
+  <div class="grid">
+    <div class="card"><h3>⚡ Dual Solvers</h3><p>Fast heuristic solves thousands of parts in seconds; Exact mode (OR-Tools CP-SAT) delivers a <b>provably optimal</b> plan (✔Optimal) and auto-stops after 30 s with a suggestion to switch modes. A live "Optimizing… N s" stopwatch runs on the button.</p></div>
+    <div class="card"><h3>📥 Easy Input</h3><p>Manual table entry (add/edit/delete, resizable columns) or one-click Excel import with template download and per-row validation. Stock length, kerf loss and material name are configurable.</p></div>
+    <div class="card"><h3>📊 Visualization</h3><p>Proportional cutting diagrams (labeled parts, gray remnants, identical patterns grouped ×N), plan summary + part verification tables, and a statistics bar with utilization and waste.</p></div>
+    <div class="card"><h3>📄 Reports</h3><p>Export Excel (cutting diagrams included) and print-ready PDF reports for the workshop. UI available in Chinese and English.</p></div>
+  </div>
+</section>
+
+<section class="shot">
+  <h2>🖥 Screenshot</h2>
+  <img src="images/screenshot_main.png" alt="Main window">
+</section>
+
+<section>
+  <h2>🚀 Quick Start</h2>
+  <h3>Option 1: Run the binary (recommended)</h3>
+  <p>Download <code>一维下料优化.exe</code> from Releases and double-click — no Python required.</p>
+  <h3>Option 2: Run from source</h3>
+  <pre>git clone https://github.com/YOUR-NAME/cutting.git
+cd cutting
+uv sync                # requires Python >= 3.12 and uv
+uv run python main.py</pre>
+</section>
+
+<section>
+  <h2>🛠 Tech Stack</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th></tr>
+    <tr><td>GUI</td><td>PySide6 (Qt 6)</td></tr>
+    <tr><td>Exact solver</td><td>Google OR-Tools CP-SAT</td></tr>
+    <tr><td>Excel / PDF</td><td>openpyxl · reportlab · pillow</td></tr>
+    <tr><td>Quality</td><td>uv · pytest (144 tests) · mypy · ruff</td></tr>
+    <tr><td>Packaging</td><td>PyInstaller single-file exe</td></tr>
+  </table>
+</section>
+
+<section style="text-align:center">
+  <a class="btn" href="https://github.com/YOUR-NAME/cutting/releases">⬇ Download Latest</a>
+  <a class="btn ghost" href="https://github.com/YOUR-NAME/cutting">⭐ GitHub Repo</a>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <span data-zh="© 2026 Longcamel · MIT License · 一维下料优化 v1.3.0" data-en="© 2026 Longcamel · MIT License · 1D Cutting Optimizer v1.3.0">© 2026 Longcamel · MIT License · 一维下料优化 v1.3.0</span>
+</footer>
+
+<script>
+function setLang(l){
+  document.querySelectorAll('[lang]').forEach(e=>e.classList.toggle('on', e.getAttribute('lang')===l));
+  document.querySelectorAll('[data-zh]').forEach(e=>e.textContent = l==='zh' ? e.dataset.zh : e.dataset.en);
+  document.getElementById('btn-zh').classList.toggle('active', l==='zh');
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.documentElement.lang = l==='zh' ? 'zh-CN' : 'en';
+}
+</script>
+</body>
+</html>
